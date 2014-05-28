@@ -1,0 +1,20 @@
+[datatest]
+src=/home/anjea/data/
+description=Short test
+
+[files]
+src=/home/anjea/files/
+description=other directory with files
+
+[remotebox]
+src=/home/remoteanjea/stuff/
+description=stuff on other host
+host=otherhost.mynetwork
+key=/home/anjea/.anjea/keys/otherhostkey_rsa
+user=anjea
+
+# Always good idea to backup myself
+[self]
+src=/home/installed/backup
+description=backup script and conf
+

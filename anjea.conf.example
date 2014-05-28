@@ -1,0 +1,5 @@
+[system]
+dst=/backup/anjea-backups/
+vault=/vault/anjea-vault/
+log=/var/log/anjea/
+lock=/var/lock/anjea.lock

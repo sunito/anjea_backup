@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+require 'anjea_backup'
+
+action = :backup
+if ARGV.length > 0
+  case ARGV[0].downcase
+  when 'backup'
+    action = :backup
+  when 'vault'
+    action = :vault
+  when 'list'
+    action = :list
+  end
+end
+
+begin
+  case action
+  when :backup
+    AnjeaBackup::Backup.new.backup
+  when :list
+    AnjeaBackup.new.cleanup
+  when :vault
+    AnjeaBackup.new.to_vault
+  else
+    STDERR.puts "unknown action"
+    exit 3
+  end
+rescue NoIniFileError => ex
+  STDERR.puts "#{ex.inspect}"
+  exit 4
+end
