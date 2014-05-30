@@ -9,6 +9,15 @@ AnjeaBackup will create copies of local or remote (via ssh) files and directorie
 The approach has been beautifully implemented by numerous people using e.g. bash or perl scripts.
 I aimed for quick and easy configurability and some oppinionated choices that were given my usage scenario.
 
+With anjea_backup you define what folders and files to backup (these can be on a remote server to that you have passwordless key-based ssh access to, or use sshfs).  On each execution of anjea_backup, a copy of these files and folders will be created in a defined location.  Hard links are used which means: 1) only changed files need to be transferred, 2) unchanged files are represented by inodes, taking away virtually no disk space.  Always the last backup serves as reference for the next ones (against which changes are computed).
+
+anjea_backup preserves the path and will put your files in a folder structure similar to this:
+
+    /backup/2014-11-21-04/symbolic_name/path/to/asset
+    /backup/2014-11-21-04/other_name/path/to_other/asset
+
+where `/backup` can be configured, `symbolic_name` is a user-given name and `/path/to/asset` is the path on the machine that receives the backup.
+
 ## Installation
 
 You'll probably need a decent linux installation and have rsync installed.
@@ -19,7 +28,7 @@ You'll probably need a decent linux installation and have rsync installed.
 
 AnjeaBackup is meant to be a script.  If you find 'library' usage for it, get in touch.  Also, I think if you want to use it, get in touch.
 
-The script is in `/bin/anjea` .
+The script is in `bin/anjea` .
 
 The working basic use case is to just call it.  It will pick up two configuration files (see next sections) and immediately start a backup-attempt.
 
@@ -77,6 +86,8 @@ This will need work.
 * Continue with other backups in case one faults
 * Allow manual targeted backups of single sources
 * Revive tests
+* Nested groups in ".ini" files
+* Proper ini file parser
 * (missing: send mail) -> easy to do from outside
 * (missing: do full, non incremental, non hardlinked backups into vault from time to time)
 
