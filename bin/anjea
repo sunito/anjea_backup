@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'anjea_backup'
+require_relative '../lib/anjea_backup'
 
 action = :backup
 if ARGV.length > 0

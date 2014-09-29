@@ -1,6 +1,6 @@
-require "anjea_backup/version"
-require "anjea_backup/anjea_backup"
-require "anjea_backup/inifile"
+require_relative "anjea_backup/version"
+require_relative "anjea_backup/anjea_backup"
+require_relative "anjea_backup/inifile"
 
 module AnjeaBackup
   # Our code goes here...
