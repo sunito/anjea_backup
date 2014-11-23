@@ -18,9 +18,11 @@ end
 
 def read_ini_file filename
   ini_objs = []
-  file_contents = File.readlines(filename)
-  rescue Errno::ENOENT
+  begin
+    file_contents = File.readlines(filename)
+  rescue Errno::ENOENT  
     raise NoIniFileError, "#{filename} config file error"
+  end
   ini_obj = {}
   file_contents.each do |line|
     next if(line.strip.empty? || line.start_with?("#"))
