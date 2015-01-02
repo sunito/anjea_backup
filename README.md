@@ -4,19 +4,33 @@ Warning: *I do not consider AnjeaBackup anything close to production-ready* .
 
 It is however a fun toy, and some things do work.
 
+# Mission
+
+AnjeaBackup should
+
+ - not depend on many gems (ideally a plain ruby installation should suffice).
+ - use rsync and hard links (it helps a lot if you understand these).
+ - be configurable through editing configuration files.
+ - not depend on other services (e.g. not use an external database).
+ - concentrate on doing the file synchronization, stuff like mailing or regular execution can be left to your other favorite tools (see #Example).
+
 AnjeaBackup will create copies of local or remote (via ssh) files and directories, hard-linked to former versions of the same files and directories.
 
 The approach has been beautifully implemented by numerous people using e.g. bash or perl scripts.
 I aimed for quick and easy configurability and some oppinionated choices that were given my usage scenario.
 
-With anjea_backup you define what folders and files to backup (these can be on a remote server to that you have passwordless key-based ssh access to, or use sshfs).  On each execution of anjea_backup, a copy of these files and folders will be created in a defined location.  Hard links are used which means: 1) only changed files need to be transferred, 2) unchanged files are represented by inodes, taking away virtually no disk space.  Always the last backup serves as reference for the next ones (against which changes are computed).
+With anjea_backup you define what folders and files to backup (these can be on a remote server to which you have passwordless key-based ssh access to, or use sshfs to 'tunnel' it to your local filesystem).  On each execution of anjea_backup, a copy of these files and folders will be created in a defined location.  Hard links are used which means:
+  - only changed files need to be transferred
+  - unchanged files are represented by inodes, taking away virtually no disk space.  Always the last backup serves as reference for the next ones (against which changes are computed).  The drawback here is that if a single byte in a big file changes, the whole file is transferred and created again - thus it is not a solution to sparsely backup e.g. VM images.
 
-anjea_backup preserves the path and will put your files in a folder structure similar to this:
+anjea_backup preserves the original full path and will put your files in a folder structure similar to this:
 
     /backup/2014-11-21-04/symbolic_name/path/to/asset
     /backup/2014-11-21-04/other_name/path/to_other/asset
 
 where `/backup` can be configured, `symbolic_name` is a user-given name and `/path/to/asset` is the path on the machine that receives the backup.
+
+Note that symbolic links the in source can be tricky.
 
 ## Installation
 
@@ -66,7 +80,9 @@ Defines *what* to backup and how to access it.  Example:
     key=/home/anjea/.anjea/keys/otherhostkey_rsa
     user=anjea
 
-Second group saves files from a remote box (`anjea@otherhost.mynetwork:/home/remoteanjea/stuff`) using public key as defined in `key` .
+The group names (e.g. [files]) serve as human readable name and as directory name within the `dst` location specified in `anjea.conf`.
+
+In this example, the second group (_remotebox_) saves files from a remote box (`anjea@otherhost.mynetwork:/home/remoteanjea/stuff`) using the public key defined in `key` .
 
 ## Example
 
@@ -93,6 +109,7 @@ This will need work.
 
 ## Contributing
 
+0. Contact me
 1. Fork it ( https://github.com/[my-github-username]/anjea_backup/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
