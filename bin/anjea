@@ -36,9 +36,11 @@ begin
   when :backup
     AnjeaBackup::Backup.new.backup
   when :list
-    AnjeaBackup.new.cleanup
+    AnjeaBackup::Backup.new.cleanup
   when :vault
-    AnjeaBackup.new.to_vault
+    AnjeaBackup::Backup.new.to_vault
+  when :help
+    puts usage_doc
   else
     STDERR.puts "unknown action"
     puts usage_doc

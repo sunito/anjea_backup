@@ -116,6 +116,7 @@ module AnjeaBackup
       @failed      = File.join(@destination, 'failed')
       @partial     = File.join(@destination, 'partial')
       @lock_file   = system_conf[0]['lock']
+      # rescue from malformed config
     end
   
     def log_file_for yyyymmdd, item
