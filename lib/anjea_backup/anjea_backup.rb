@@ -30,7 +30,11 @@ module AnjeaBackup
         source = item.ssh_url ? "-e \"ssh -i #{item.ssh_key}\" #{item.ssh_url}"
                               : item.src_dir
   
-        rsync_cmd = "rsync -avz --delete --relative --stats --log-file #{log_file_for(yyyymmdd, item)} --link-dest #{last_backup} #{source} #{today_backup}"
+        rsync_cmd = "rsync -avz "\
+          "--delete --relative --stats "\
+          "--log-file #{log_file_for(yyyymmdd, item)} "\
+          "--link-dest #{last_backup} "\
+          "#{source} #{today_backup}"
       
         log item, "rsync start"
         if system(rsync_cmd)
@@ -90,7 +94,7 @@ module AnjeaBackup
     end
   
     def lock!
-      File.new(@lock_file,'w').flock( File::LOCK_NB | File::LOCK_EX )
+      File.new(@lock_file, 'w').flock(File::LOCK_NB | File::LOCK_EX)
     end
   
     def link_last_backup today_backup, last_backup
