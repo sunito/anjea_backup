@@ -2,6 +2,19 @@
 
 require 'anjea_backup'
 
+usage_doc = <<eos
+anjea [backup|vault|list|help]
+
+  anjea_backup uses rsync to synchronize files.
+  It uses hard links which are suitable for large sets of small, chaning files.
+  Hard links are not so optimal for large files, a single changed byte
+  will leed to a full copy of that file.
+
+  Configuration takes place in two files, anjea.conf and backup.conf .
+  The the README for details.
+eos
+
+
 action = :backup
 if ARGV.length > 0
   case ARGV[0].downcase
@@ -11,6 +24,10 @@ if ARGV.length > 0
     action = :vault
   when 'list'
     action = :list
+  when 'help'
+    action = :help
+  else
+    action = :help
   end
 end
 
@@ -24,6 +41,7 @@ begin
     AnjeaBackup.new.to_vault
   else
     STDERR.puts "unknown action"
+    puts usage_doc
     exit 3
   end
 rescue NoIniFileError => ex
