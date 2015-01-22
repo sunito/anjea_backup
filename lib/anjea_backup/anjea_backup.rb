@@ -9,12 +9,12 @@ module AnjeaBackup
 
     def initialize
       read_system_conf
+      setup_dirs
       if !lock!
         log_err "Aborting, anjea already running.  Delete #{@lock_file} if not."
         exit 2
       end
       read_backups_conf
-      setup_dirs
     end
   
     def backup
