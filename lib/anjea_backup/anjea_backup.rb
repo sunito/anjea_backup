@@ -5,6 +5,8 @@ require_relative 'inifile'
 
 module AnjeaBackup
   class Backup
+    include AnjeaBackup::Logger
+
     def initialize
       read_system_conf
       if !lock!
@@ -16,8 +18,8 @@ module AnjeaBackup
     end
   
     def backup
-      yyyymmdd = DateTime.now.strftime("%Y-%m-%d-%H")
-      
+      yyyymmdd = now_with_hour
+
       # TODO work in a tmp work dir
       @backup_items.each do |item|
         last_backup  = File.join(@last, item.name)
@@ -82,15 +84,9 @@ module AnjeaBackup
     end
   
     def log_err item=nil, msg
-      if item
-        STDERR.puts "[#{item.name}] #{DateTime.now.strftime("%Y-%m-%d-%H:%M")} - #{msg}"
-      else
-        STDERR.puts "#{DateTime.now.strftime("%Y-%m-%d-%H:%M")} - #{msg}"
-      end
-    end
-  
-    def log item, msg
-      puts "[#{item.name}] #{DateTime.now.strftime("%Y-%m-%d-%H-%M")} - #{msg}"
+      log_msg = (!item.nil?) ? "[#{item.name}] #{now_with_minutes} - #{msg}"
+        : "#{now_with_minutes} - #{msg}"
+      STDERR.puts log_msg
     end
   
     def lock!
