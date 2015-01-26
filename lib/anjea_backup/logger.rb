@@ -4,10 +4,6 @@ module AnjeaBackup
       DateTime.now.strftime("%Y-%m-%d-%H-%M")
     end
 
-    def now_with_hour
-      DateTime.now.strftime("%Y-%m-%d-%H")
-    end
-
     def log item, msg
       if item
         puts "[#{item.name}] #{now_with_minutes} - #{msg}"

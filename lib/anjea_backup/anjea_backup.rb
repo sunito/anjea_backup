@@ -18,7 +18,7 @@ module AnjeaBackup
     end
   
     def backup
-      yyyymmdd = now_with_hour
+      yyyymmdd = now_with_minutes
 
       # TODO work in a tmp work dir
       @backup_items.each do |item|
