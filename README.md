@@ -30,19 +30,21 @@ anjea_backup preserves the original full path and will put your files in a folde
 
 where `/backup` can be configured, `symbolic_name` is a user-given name and `/path/to/asset` is the path on the machine that receives the backup.
 
-Note that symbolic links the in source can be tricky.
+Note that symbolic links in the source can be tricky.
+
+## Requirements
+
+You'll probably need a decent linux installation and have rsync installed.  I opted to keep compatibility to ruby 1.9.3 .  `bundler` and `rake` gems.  I list these, because I want anjea to be useful on a pretty bare system where the ruby dependencies are properly managed by the distributions base packages - no fiddling with rvm/rbenv and Co.
 
 ## Installation
-
-You'll probably need a decent linux installation and have rsync installed.
 
     $ gem install anjea_backup
 
 ## Usage
 
-AnjeaBackup is meant to be a script.  If you find 'library' usage for it, get in touch.  Also, I think if you want to use it, get in touch.
+AnjeaBackup is meant to be a script.  If you find 'library' usage for it, get in touch.  Also, I think if you want to *use* it, get in touch.
 
-The script is in `bin/anjea` .
+The main script lives in `bin/anjea` .
 
 The working basic use case is to just call it.  It will pick up two configuration files (see next sections) and immediately start a backup-attempt.
 
