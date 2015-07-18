@@ -79,12 +79,19 @@ module AnjeaBackup
     private
   
     def setup_dirs
-      Dir.mkdir @destination if !File.directory? @destination
-      Dir.mkdir @vault       if !File.directory? @vault
-      Dir.mkdir @log         if !File.directory? @log
-      Dir.mkdir @last        if !File.directory? @last
-      Dir.mkdir @partial     if !File.directory? @partial
-      Dir.mkdir @failed      if !File.directory? @failed
+      begin
+        FileUtils.mkdir_p @destination if !File.directory? @destination
+        FileUtils.mkdir_p @vault       if !File.directory? @vault
+        FileUtils.mkdir_p @log         if !File.directory? @log
+        FileUtils.mkdir_p @last        if !File.directory? @last
+        FileUtils.mkdir_p @partial     if !File.directory? @partial
+        FileUtils.mkdir_p @failed      if !File.directory? @failed
+      rescue Errno::EACCES => e
+        log_err "ERROR: Could not create a needed directory:"
+        log_err "#{e.message}"
+        log_err "Exiting on error."
+        exit 5
+      end
     end
   
     def log_err item=nil, msg
