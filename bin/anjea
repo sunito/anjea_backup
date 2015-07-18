@@ -6,9 +6,9 @@ usage_doc = <<eos
 anjea [backup|vault|list|help]
 
   anjea_backup uses rsync to synchronize files.
-  It uses hard links which are suitable for large sets of small, chaning files.
+  It uses hard links which are suitable for large sets of small, changing files.
   Hard links are not very suitable for large files, as a single changed byte
-  will leed to a full copy of that file.
+  will lead to a full copy of that file.
 
   Configuration takes place in two files, anjea.conf and backup.conf .
   See the README for details.
