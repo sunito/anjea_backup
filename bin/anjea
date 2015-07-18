@@ -4,6 +4,7 @@ require 'anjea_backup'
 
 usage_doc = <<eos
 anjea [backup|vault|list|help]
+  version #{AnjeaBackup::VERSION}
 
   anjea_backup uses rsync to synchronize files.
   It uses hard links which are suitable for large sets of small, changing files.
