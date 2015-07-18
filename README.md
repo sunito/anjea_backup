@@ -82,7 +82,7 @@ Defines *what* to backup and how to access it.  Example:
     key=/home/anjea/.anjea/keys/otherhostkey_rsa
     user=anjea
 
-The group names (e.g. [files]) serve as human readable name and as directory name within the `dst` location specified in `anjea.conf`.
+The group names (e.g. `[files]`) serve as human readable name and as directory name within the `dst` location specified in `anjea.conf`.
 
 In this example, the second group (_remotebox_) saves files from a remote box (`anjea@otherhost.mynetwork:/home/remoteanjea/stuff`) using the public key defined in `key` .
 
