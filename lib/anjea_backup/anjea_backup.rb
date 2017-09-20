@@ -4,38 +4,22 @@ require 'pathname'
 require_relative 'inifile'
 
 module AnjeaBackup
-  class BackupItem
-    attr_accessor :name
-    attr_accessor :description
-    attr_accessor :src_dir
-    attr_accessor :ssh_url
-    attr_accessor :ssh_key
-  
-    def initialize hash
-      @name        = hash[:name]
-      @description = hash['description']
-      @src_dir     = hash['src']
-      if hash['host'] && hash['user'] && hash['key']
-        @ssh_url = "#{hash['user']}@#{hash['host']}:#{@src_dir}"
-        @ssh_key = hash['key']
-      end
-    end
-  end
-  
   class Backup
+    include AnjeaBackup::Logger
+
     def initialize
       read_system_conf
+      setup_dirs
       if !lock!
         log_err "Aborting, anjea already running.  Delete #{@lock_file} if not."
         exit 2
       end
       read_backups_conf
-      setup_dirs
     end
   
     def backup
-      yyyymmdd = DateTime.now.strftime("%Y-%m-%d-%H")
-      
+      yyyymmdd = now_with_minutes
+
       # TODO work in a tmp work dir
       @backup_items.each do |item|
         last_backup  = File.join(@last, item.name)
@@ -46,7 +30,11 @@ module AnjeaBackup
         source = item.ssh_url ? "-e \"ssh -i #{item.ssh_key}\" #{item.ssh_url}"
                               : item.src_dir
   
-        rsync_cmd = "rsync -avz --delete --relative --stats --log-file #{log_file_for(yyyymmdd, item)} --link-dest #{last_backup} #{source} #{today_backup}"
+        rsync_cmd = "rsync -avz "\
+          "--delete --relative --stats "\
+          "--log-file #{log_file_for(yyyymmdd, item)} "\
+          "--link-dest #{last_backup} "\
+          "#{source} #{today_backup}"
       
         log item, "rsync start"
         if system(rsync_cmd)
@@ -91,28 +79,29 @@ module AnjeaBackup
     private
   
     def setup_dirs
-      Dir.mkdir @destination if !File.directory? @destination
-      Dir.mkdir @vault       if !File.directory? @vault
-      Dir.mkdir @log         if !File.directory? @log
-      Dir.mkdir @last        if !File.directory? @last
-      Dir.mkdir @partial     if !File.directory? @partial
-      Dir.mkdir @failed      if !File.directory? @failed
-    end
-  
-    def log_err item=nil, msg
-      if item
-        STDERR.puts "[#{item.name}] #{DateTime.now.strftime("%Y-%m-%d-%H:%M")} - #{msg}"
-      else
-        STDERR.puts "#{DateTime.now.strftime("%Y-%m-%d-%H:%M")} - #{msg}"
+      begin
+        FileUtils.mkdir_p @destination if !File.directory? @destination
+        FileUtils.mkdir_p @vault       if !File.directory? @vault
+        FileUtils.mkdir_p @log         if !File.directory? @log
+        FileUtils.mkdir_p @last        if !File.directory? @last
+        FileUtils.mkdir_p @partial     if !File.directory? @partial
+        FileUtils.mkdir_p @failed      if !File.directory? @failed
+      rescue Errno::EACCES => e
+        log_err "ERROR: Could not create a needed directory:"
+        log_err "#{e.message}"
+        log_err "Exiting on error."
+        exit 5
       end
     end
   
-    def log item, msg
-      puts "[#{item.name}] #{DateTime.now.strftime("%Y-%m-%d-%H-%M")} - #{msg}"
+    def log_err item=nil, msg
+      log_msg = (!item.nil?) ? "[#{item.name}] #{now_with_minutes} - #{msg}"
+        : "#{now_with_minutes} - #{msg}"
+      STDERR.puts log_msg
     end
   
     def lock!
-      File.new(@lock_file,'w').flock( File::LOCK_NB | File::LOCK_EX )
+      File.new(@lock_file, 'w').flock(File::LOCK_NB | File::LOCK_EX)
     end
   
     def link_last_backup today_backup, last_backup
@@ -134,6 +123,7 @@ module AnjeaBackup
       @failed      = File.join(@destination, 'failed')
       @partial     = File.join(@destination, 'partial')
       @lock_file   = system_conf[0]['lock']
+      # rescue from malformed config
     end
   
     def log_file_for yyyymmdd, item
